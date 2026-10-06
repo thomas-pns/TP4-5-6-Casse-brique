@@ -12,3 +12,4 @@ Réalisé le 06/10/2026
 ToDo List:
     Version du package (__version__), configuration par défaut, exports conditionnels.
 """
+

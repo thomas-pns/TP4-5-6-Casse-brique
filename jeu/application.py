@@ -14,6 +14,8 @@ ToDo List:
 """
 import tkinter as tk
 from tkinter import messagebox
+from jeu.brique import HAUTEUR_CANVAS, LARGEUR_CANVAS, creer_grille
+
 
 class Application:
     def __init__(self):
@@ -33,7 +35,7 @@ class Application:
 
         self.texte_score = self.canvas.create_text(700, 20, text="Score : 0", fill="yellow", font=("Helvetica", 14, "bold"))
         self.label_vies = self.canvas.create_text(100, 20, text="Vies : 3", fill="red", font=("Helvetica", 14, "bold"))
-
+        self.briques = creer_grille(self.canvas, largeur_canvas=800)
 
 
         tk.Button(self.fenetre, text="Démarrer", command=self.test).pack()
@@ -65,4 +67,7 @@ class Application:
     def deplacer_balle(self, balle):
         balle.deplacer()
         self.fenetre.after(20, lambda: self.deplacer_balle(balle))
-    
+
+if __name__ == "__main__":
+    app = Application()
+    app.lancer()

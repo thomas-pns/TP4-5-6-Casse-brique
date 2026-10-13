@@ -34,6 +34,7 @@ class Balle:
             self.vitesse_x = -self.vitesse_x
         if self.y + self.rayon >= self.canvas.winfo_height():
             self.vitesse_y = -self.vitesse_y
+            print("Vie perdue !")
         if self.x - self.rayon <= 0:
             self.vitesse_x = -self.vitesse_x
         if self.y - self.rayon <= 0:

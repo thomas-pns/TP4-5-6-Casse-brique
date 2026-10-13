@@ -51,3 +51,5 @@ class Application:
 
     def lancer(self):
         self.fenetre.mainloop()
+
+    

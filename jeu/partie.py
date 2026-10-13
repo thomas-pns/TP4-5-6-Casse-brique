@@ -16,6 +16,8 @@ ToDo List:
 class Partie:
     def __init__(self, application, canvas, balle, raquette, brique, score):
         self.application = application
+    def __init__(self, application, canvas, balle, raquette, brique, score):
+        self.application = application
         self.canvas = canvas
         self.balle = balle
         self.raquette = raquette

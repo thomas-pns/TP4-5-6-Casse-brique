@@ -39,14 +39,23 @@ class Partie:
         if x1 <= rx2 and x2 >= rx1 and y2 >= ry1 and y1 <= ry2:
             self.balle.vitesse_y = -self.balle.vitesse_y
             print("Collision détectée !")
-    
+
+    def perdre_une_vie(self):
+        print("Vie perdue !")
+        self.balle.x = 400
+        self.balle.y = 300
+        self.balle.vitesse_x = 5
+        self.balle.vitesse_y = 5
+        self.canvas.coords(self.balle.id, self.balle.x - self.balle.rayon, self.balle.y - self.balle.rayon, self.balle.x + self.balle.rayon, self.balle.y + self.balle.rayon)
+        
     def boucle_jeu(self):
-        print("Boucle de jeu en cours...")
+        # print("Boucle de jeu en cours...")
         self.balle.deplacer()
 
         if self.balle.est_tombee():
-            pass
-            # self.perdre_une_vie()
+            # print("La balle est tombée ! Vie perdue.")
+            self.perdre_une_vie()
+
         else:
             self.verifier_collisions()
 

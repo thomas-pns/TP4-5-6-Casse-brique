@@ -14,8 +14,15 @@ ToDo List:
 """
 
 class Partie:
-    def __init__(self, canvas, balle, raquette):
+    def __init__(self, fenetre, canvas, balle, raquette):
+        self.fenetre = fenetre
         self.canvas = canvas
         self.balle = balle
         self.raquette = raquette
-    
+
+
+    def lecture_coords(self):
+        coords_balle = self.canvas.coords(self.balle.id)
+        coords_raquette = self.canvas.coords(self.raquette.id)
+        print(coords_raquette, coords_balle)
+        self.fenetre.after(20, lambda: self.lecture_coords())

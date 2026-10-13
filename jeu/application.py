@@ -55,10 +55,13 @@ class Application:
     def test(self):
         from jeu.balle import Balle
         from jeu.raquette import Raquette 
+        from jeu.partie import Partie
 
         balle = Balle(self.canvas, x=400, y=300, rayon=10, vitesse_x=5, vitesse_y=5)
         raquette = Raquette(self.canvas)
 
+        partie = Partie(self.fenetre,self.canvas, balle, raquette)
+        partie.lecture_coords()
         
         self.deplacer_balle(balle)
 

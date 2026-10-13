@@ -22,7 +22,7 @@ class Raquette():
         self.vitesse = vitesse
         self.x = (self.canvas.winfo_width() - self.largeur) / 2
         self.y = self.canvas.winfo_height() - self.hauteur - 10
-        self.rect = self.canvas.create_rectangle(self.x, self.y, self.x + self.largeur, self.y + self.hauteur, fill="blue")
+        self.id = self.canvas.create_rectangle(self.x, self.y, self.x + self.largeur, self.y + self.hauteur, fill="blue")
         self.canvas.bind("<Left>", self.deplacer_gauche)
         self.canvas.bind("<Right>", self.deplacer_droite)
         self.canvas.bind("<Motion>", self.suivre_souris)
@@ -31,12 +31,12 @@ class Raquette():
     def deplacer_gauche(self, event):
         if self.x - self.vitesse >= 0:
             self.x -= self.vitesse
-            self.canvas.move(self.rect, -self.vitesse, 0)
+            self.canvas.move(self.id, -self.vitesse, 0)
     def deplacer_droite(self, event):
         if self.x + self.largeur + self.vitesse <= self.canvas.winfo_width():
             self.x += self.vitesse
-            self.canvas.move(self.rect, self.vitesse, 0)
+            self.canvas.move(self.id, self.vitesse, 0)
     def suivre_souris(self, event):
         if 0 <= event.x <= self.canvas.winfo_width() - self.largeur:
             self.x = event.x
-            self.canvas.coords(self.rect, self.x, self.y, self.x + self.largeur, self.y + self.hauteur)
+            self.canvas.coords(self.id, self.x, self.y, self.x + self.largeur, self.y + self.hauteur)

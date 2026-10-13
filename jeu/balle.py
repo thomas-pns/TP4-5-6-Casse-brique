@@ -29,7 +29,6 @@ class Balle:
         self.y += self.vitesse_y
         self.canvas.move(self.id, self.vitesse_x, self.vitesse_y)
 
-        print(self.x,self.y)
 
         if self.x + self.rayon >= self.canvas.winfo_width():
             self.vitesse_x = -self.vitesse_x

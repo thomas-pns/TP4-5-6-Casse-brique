@@ -36,7 +36,7 @@ class Application:
 
 
 
-        tk.Button(self.fenetre, text="Démarrer").pack()
+        tk.Button(self.fenetre, text="Démarrer", command=self.test).pack()
         tk.Button(self.fenetre, text="QUITTER", fg="red", command=self.fenetre.destroy).pack()
 
     def create_menu(self):
@@ -51,3 +51,17 @@ class Application:
 
     def lancer(self):
         self.fenetre.mainloop()
+
+    def test(self):
+        from jeu.balle import Balle
+        from jeu.raquette import Raquette 
+
+        balle = Balle(self.canvas, x=400, y=300, rayon=10, vitesse_x=5, vitesse_y=5)
+        raquette = Raquette(self.canvas)
+
+        
+        self.deplacer_balle(balle)
+
+    def deplacer_balle(self, balle):
+        balle.deplacer()
+        self.fenetre.after(20, lambda: self.deplacer_balle(balle))

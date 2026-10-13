@@ -24,6 +24,9 @@ class Balle:
 
         self.id = canvas.create_oval(self.x - self.rayon, self.y - self.rayon, self.x + self.rayon, self.y + self.rayon, fill="white")
 
+    def est_tombee(self):
+        return self.y - self.rayon >= self.canvas.winfo_height()
+
     def deplacer(self):
         self.x += self.vitesse_x
         self.y += self.vitesse_y
@@ -32,10 +35,10 @@ class Balle:
 
         if self.x + self.rayon >= self.canvas.winfo_width():
             self.vitesse_x = -self.vitesse_x
-        if self.y + self.rayon >= self.canvas.winfo_height():
-            self.vitesse_y = -self.vitesse_y
-            print("Vie perdue !")
+        # if self.est_tombee():
+        #     self.vitesse_y = -self.vitesse_y
+        #     print("Vie perdue !")
         if self.x - self.rayon <= 0:
             self.vitesse_x = -self.vitesse_x
-        if self.y - self.rayon <= 0:
+        if self.y + self.rayon <= 0:
             self.vitesse_y = -self.vitesse_y

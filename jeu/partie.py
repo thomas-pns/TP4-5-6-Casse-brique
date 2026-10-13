@@ -1,8 +1,8 @@
-# Header
 # -*- coding: utf-8 -*-
 """
 Objectifs du fichier :
-    Orchestrer la boucle de jeu, détecter collisions (balle/raquette, balle/briques, balle/murs), gérer fin de partie (victoire/défaite).
+    Orchestrer la boucle de jeu, détecter collisions (balle/raquette,
+    balle/briques, balle/murs), gérer fin de partie (victoire/défaite).
 
 Par :
     Thomas CHASSANIS PONS et Camil BOUZIRI
@@ -13,13 +13,36 @@ ToDo List:
     Power-ups, niveaux multiples, système de combo, sauvegarde/reprise partie.
 """
 
+
 class Partie:
-    def __init__(self, fenetre, canvas, balle, raquette, brique, score):
+    """
+    Gère la boucle de jeu et les collisions.
+    Attributs :
+        fenetre : fenêtre Tk (pour programmer la boucle avec after).
+        canvas : zone de jeu.
+        balle : balle en jeu.
+        raquette : raquette du joueur.
+        briques : Liste des briques encore présentes.
+        score : points accumulés.
+    """
+
+    def __init__(self, fenetre, canvas, balle, raquette, briques, score):
+        """
+        But : initialiser une partie.
+        Entrées :
+            fenetre (tk.Tk) : fenêtre principale.
+            canvas (tk.Canvas) : zone de jeu.
+            balle (Balle) : balle en jeu.
+            raquette (Raquette) : raquette du joueur.
+            briques (Liste) : briques du niveau.
+            score (int) : score de départ.
+        Sortie : aucune.
+        """
         self.fenetre = fenetre
         self.canvas = canvas
         self.balle = balle
         self.raquette = raquette
-        self.brique = brique
+        self.briques = briques
         self.score = score
 
         
@@ -39,7 +62,8 @@ class Partie:
         if x1 <= rx2 and x2 >= rx1 and y2 >= ry1 and y1 <= ry2:
             self.balle.vitesse_y = -self.balle.vitesse_y
             print("Collision détectée !")
-
+        self.gerer_collision_briques()
+    
     def perdre_une_vie(self):
         print("Vie perdue !")
         self.balle.x = 400
@@ -59,4 +83,86 @@ class Partie:
         else:
             self.verifier_collisions()
 
-        self.fenetre.after(20, lambda: self.boucle_jeu())
+        self.fenetre.after(20, self.boucle_jeu)
+
+    def point_le_plus_proche(self, brique):
+        """
+        But : trouver le point de la brique le plus proche du centre de la
+        balle (projection du centre sur le rectangle, axe par axe).
+        Entrée : brique (Brique) : brique testée.
+        Sortie : (tuple) (x_proche, y_proche).
+        """
+        x_min, y_min, x_max, y_max = brique.obtenir_boite()
+        x_proche = min(max(self.balle.x, x_min), x_max)
+        y_proche = min(max(self.balle.y, y_min), y_max)
+        return x_proche, y_proche
+
+    def touche(self, brique):
+        """
+        But : tester si la balle (disque) chevauche une brique.
+        Entrée : brique (Brique) : brique testée.
+        Sortie : (bool) True en cas de contact.
+        """
+        x_proche, y_proche = self.point_le_plus_proche(brique)
+        ecart_x = self.balle.x - x_proche
+        ecart_y = self.balle.y - y_proche
+        return ecart_x ** 2 + ecart_y ** 2 <= self.balle.rayon ** 2
+
+    def rebondir(self, brique):
+        """
+        But : faire rebondir la balle sur la face de la brique touchée
+        (réflexion de Descartes : inversion de la composante normale).
+        Entrée : brique (Brique) : brique touchée.
+        Sortie : aucune (modifie la vitesse de la balle).
+        """
+        x_min, y_min, x_max, y_max = brique.obtenir_boite()
+        x_proche, y_proche = self.point_le_plus_proche(brique)
+        ecart_x = abs(self.balle.x - x_proche)
+        ecart_y = abs(self.balle.y - y_proche)
+        if ecart_x == 0 and ecart_y == 0:
+            # Centre à l'intérieur : on choisit l'axe de plus faible pénétration.
+            penetration_x = min(self.balle.x - x_min, x_max - self.balle.x)
+            penetration_y = min(self.balle.y - y_min, y_max - self.balle.y)
+            face_laterale = penetration_x < penetration_y
+        else:
+            face_laterale = ecart_x > ecart_y
+
+        if face_laterale:
+            centre_x = (x_min + x_max) / 2
+            if self.balle.x < centre_x:
+                self.balle.vitesse_x = -abs(self.balle.vitesse_x)
+            else:
+                self.balle.vitesse_x = abs(self.balle.vitesse_x)
+        else:
+            centre_y = (y_min + y_max) / 2
+            if self.balle.y < centre_y:
+                self.balle.vitesse_y = -abs(self.balle.vitesse_y)
+            else:
+                self.balle.vitesse_y = abs(self.balle.vitesse_y)
+
+    def gerer_collision_briques(self):
+        """
+        But : traiter la première brique touchée : rebond, perte de vie,
+        suppression et points si elle est détruite.
+        Entrée : aucune.
+        Sortie : (bool) True si une brique a été touchée.
+        """
+        for brique in self.briques:
+            if self.touche(brique):
+                self.rebondir(brique)
+                if brique.frapper():
+                    brique.effacer(self.canvas)
+                    self.briques.supprimer(brique)
+                    self.score += brique.points
+                else:
+                    brique.rafraichir(self.canvas)
+                return True
+        return False
+
+    def est_gagnee(self):
+        """
+        But : indiquer si toutes les briques ont été détruites.
+        Entrée : aucune.
+        Sortie : (bool) True si plus aucune brique.
+        """
+        return len(self.briques) == 0

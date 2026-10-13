@@ -41,5 +41,5 @@ class Balle:
         #     print("Vie perdue !")
         if self.x - self.rayon <= 0:
             self.vitesse_x = -self.vitesse_x
-        if self.y + self.rayon <= 0:
+        if self.y - self.rayon <= 0:
             self.vitesse_y = -self.vitesse_y

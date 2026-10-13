@@ -12,3 +12,10 @@ Réalisé le 06/10/2026
 ToDo List:
     Power-ups, niveaux multiples, système de combo, sauvegarde/reprise partie.
 """
+
+class Partie:
+    def __init__(self, canvas, balle, raquette):
+        self.canvas = canvas
+        self.balle = balle
+        self.raquette = raquette
+    

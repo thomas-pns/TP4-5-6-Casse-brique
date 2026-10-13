@@ -35,7 +35,7 @@ class Application:
 
         self.texte_score = self.canvas.create_text(700, 20, text="Score : 0", fill="yellow", font=("Helvetica", 14, "bold"))
         self.label_vies = self.canvas.create_text(100, 20, text="Vies : 3", fill="red", font=("Helvetica", 14, "bold"))
-        self.briques = creer_grille(self.canvas, largeur_canvas=800)
+        
         
 
         tk.Button(self.fenetre, text="Démarrer", command=self.test).pack()
@@ -61,8 +61,9 @@ class Application:
 
         balle = Balle(self.canvas, x=400, y=300, rayon=10, vitesse_x=5, vitesse_y=5)
         raquette = Raquette(self.canvas)
+        briques = creer_grille(self.canvas, largeur_canvas=800)
 
-        partie = Partie(self.fenetre,self.canvas, balle, raquette)
+        partie = Partie(self.fenetre,self.canvas, balle, raquette, briques, 0)
         partie.boucle_jeu()
         
 

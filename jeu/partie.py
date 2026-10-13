@@ -41,6 +41,7 @@ class Partie:
             print("Collision détectée !")
     
     def boucle_jeu(self):
+        print("Boucle de jeu en cours...")
         self.balle.deplacer()
 
         if self.balle.est_tombee():
@@ -49,4 +50,4 @@ class Partie:
         else:
             self.verifier_collisions()
 
-        self.fenetre.after(20, lambda: self.lecture_coords())
+        self.fenetre.after(20, lambda: self.boucle_jeu())

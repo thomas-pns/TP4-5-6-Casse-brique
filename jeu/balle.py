@@ -28,6 +28,7 @@ class Balle:
         return self.y - self.rayon >= self.canvas.winfo_height()
 
     def deplacer(self):
+        print(f"Position actuelle de la balle : ({self.x}, {self.y})")
         self.x += self.vitesse_x
         self.y += self.vitesse_y
         self.canvas.move(self.id, self.vitesse_x, self.vitesse_y)

@@ -15,11 +15,6 @@ ToDo List:
 
 class Partie:
     def __init__(self, application, canvas, balle, raquette, brique, score):
-<<<<<<< HEAD
-        self.application = application
-    def __init__(self, application, canvas, balle, raquette, brique, score):
-=======
->>>>>>> 9a36c13 (merge vers main perte de vie)
         self.application = application
         self.canvas = canvas
         self.balle = balle

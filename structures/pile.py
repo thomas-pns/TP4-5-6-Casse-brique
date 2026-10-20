@@ -12,6 +12,7 @@ Réalisé le 06/10/2026
 ToDo List:
     Pile avec max/min en O(1), historique limité, sérialisation, pile persistante.
 """
+from structures.liste import Liste
 
 class Pile:
     """Pile (LIFO) : le dernier élément empilé est le premier dépilé."""

@@ -15,6 +15,7 @@ ToDo List:
 import tkinter as tk
 from tkinter import messagebox
 from jeu.brique import HAUTEUR_CANVAS, LARGEUR_CANVAS, creer_grille
+TAG_GAME_OVER = "game_over"
 
 
 class Application:
@@ -52,6 +53,64 @@ class Application:
         barre.add_cascade(label="Aide", menu=menu_aide)
         self.fenetre.config(menu=barre)
 
+    def afficher_game_over(self, score):
+        """
+        But : superposer l'écran game over au jeu (voile, titre, score
+        final, boutons Rejouer et Quitter).
+        Entrée : score (int) : score final de la partie.
+        Sortie : aucune.
+        """
+        largeur = self.canvas.winfo_width()
+        hauteur = self.canvas.winfo_height()
+        centre_x = largeur / 2
+        centre_y = hauteur / 2
+
+        # Le canvas Tk ne gère pas la transparence : le motif gray50 ne
+        # peint qu'un pixel sur deux, ce qui assombrit le jeu en dessous.
+        self.canvas.create_rectangle(0, 0, largeur, hauteur, fill="black",
+                                     stipple="gray50", outline="",
+                                     tags=TAG_GAME_OVER)
+        self.canvas.create_text(centre_x, centre_y - 60, text="GAME OVER",
+                                fill="red", font=("Helvetica", 48, "bold"),
+                                tags=TAG_GAME_OVER)
+        self.canvas.create_text(centre_x, centre_y + 5,
+                                text=f"Score final : {score}", fill="yellow",
+                                font=("Helvetica", 20, "bold"),
+                                tags=TAG_GAME_OVER)
+
+        bouton_rejouer = tk.Button(self.canvas, text="Rejouer", width=10,
+                                   command=self.rejouer)
+        bouton_quitter = tk.Button(self.canvas, text="Quitter", width=10,
+                                   fg="red", command=self.fenetre.destroy)
+        self.canvas.create_window(centre_x - 70, centre_y + 70,
+                                  window=bouton_rejouer, tags=TAG_GAME_OVER)
+        self.canvas.create_window(centre_x + 70, centre_y + 70,
+                                  window=bouton_quitter, tags=TAG_GAME_OVER)
+        self.boutons_game_over = [bouton_rejouer, bouton_quitter]
+
+        # Entrée relance aussi la partie.
+        self.canvas.bind("<Return>", lambda evenement: self.rejouer())
+        self.canvas.focus_set()
+
+    def rejouer(self):
+        """
+        But : effacer l'écran game over et le niveau terminé, puis lancer
+        une nouvelle partie.
+        Entrée : aucune.
+        Sortie : aucune.
+        """
+        self.canvas.unbind("<Return>")
+        # delete("all") retire les fenêtres du canvas, pas les widgets
+        # eux-mêmes : on détruit donc les boutons explicitement.
+        for bouton in self.boutons_game_over:
+            bouton.destroy()
+        self.boutons_game_over = []
+
+        self.canvas.delete("all")
+        self.creer_hud()
+        self.test()
+
+
     def afficher_regles(self):
         tk.messagebox.showinfo("Règles", "Détruisez toutes les briques !", parent=self.fenetre)
 
@@ -69,7 +128,14 @@ class Application:
 
         partie = Partie(self,self.canvas, balle, raquette, briques, 0)
         partie.boucle_jeu()
-        
+
+    def afficher_score(self, score):
+        """
+        But : mettre à jour le score affiché.
+        Entrée : score (int) : score courant.
+        Sortie : aucune.
+        """
+        self.canvas.itemconfigure(self.texte_score, text=f"Score : {score}")
 
 if __name__ == "__main__":
     app = Application()

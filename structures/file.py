@@ -12,9 +12,8 @@ Réalisé le 06/10/2026
 ToDo List:
     File circulaire, file de priorité, persistance, itérateur.
 """
-
+from structures.liste import Liste
 class File:
-    """File (FIFO) : le premier élément enfilé est le premier défilé."""
 
     def __init__(self):
         self.elements = Liste()
@@ -22,15 +21,12 @@ class File:
     def enfiler(self, valeur):
         """
         But : ajouter un élément en fin de file.
-        Entrée : valeur (object). Sortie : aucune.
         """
         self.elements.ajouter_fin(valeur)
 
     def defiler(self):
         """
         But : retirer et renvoyer l'élément en tête de file.
-        Entrée : aucune. Sortie : (object) élément retiré.
-        Lève IndexError si la file est vide.
         """
         return self.elements.retirer_debut()
 

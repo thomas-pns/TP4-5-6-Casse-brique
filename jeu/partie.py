@@ -48,9 +48,10 @@ class Partie:
         self.raquette = raquette
         self.briques = briques
         self.score = score
-
         self.vies = 3
         self.application.afficher_vies(self.vies)
+        self.est_terminee = False
+        self.application.afficher_score(self.score)
 
         
     def lecture_coords(self):
@@ -113,6 +114,10 @@ class Partie:
         self.canvas.coords(self.balle.id, self.balle.x - self.balle.rayon, self.balle.y - self.balle.rayon, self.balle.x + self.balle.rayon, self.balle.y + self.balle.rayon)
 
     def boucle_jeu(self):
+        if self.est_terminee:
+            return
+
+       
         # print("Boucle de jeu en cours...")
         self.balle.deplacer()
 
@@ -121,13 +126,23 @@ class Partie:
             self.perdre_une_vie()
 
             if self.vies <= 0:
-                print("Partie terminée !")
+                self.terminer()
                 return
 
         else:
             self.verifier_collisions()
 
         self.application.fenetre.after(20, lambda: self.boucle_jeu())
+
+    def terminer(self):
+        """
+        But : arrêter la partie (défaite) et afficher l'écran game over.
+        Entrée : aucune.
+        Sortie : aucune.
+        """
+        self.est_terminee = True
+        self.canvas.delete(self.balle.id)
+        self.application.afficher_game_over(self.score)
 
     def point_le_plus_proche(self, brique):
         """
@@ -198,6 +213,7 @@ class Partie:
                     brique.effacer(self.canvas)
                     self.briques.supprimer(brique)
                     self.score += brique.points
+                    self.application.afficher_score(self.score)
                 else:
                     brique.rafraichir(self.canvas)
                 return True

@@ -126,6 +126,7 @@ class Partie:
         """
         self.vies -= 1
         self.application.afficher_vies(self.vies)
+        self.balle.effacer_trainee()
 
         self.balle.x = 400
         self.balle.y = 300
@@ -168,6 +169,7 @@ class Partie:
         Sortie : aucune.
         """
         self.est_terminee = True
+        self.balle.effacer_trainee()
         self.canvas.delete(self.balle.id)
         self.application.afficher_game_over(self.score)
 

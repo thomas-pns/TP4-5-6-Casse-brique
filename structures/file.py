@@ -59,3 +59,11 @@ class File:
         Sortie : (int) nombre d'éléments.
         """
         return len(self.elements)
+
+    def __iter__(self):
+        """
+        But : parcourir la file, du premier élément entré au dernier.
+        Entrée : aucune.
+        Sortie : (générateur) éléments successifs.
+        """
+        return iter(self.elements)

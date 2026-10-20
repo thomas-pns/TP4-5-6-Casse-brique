@@ -68,6 +68,10 @@ class Partie:
                 print("Partie terminée !")
                 return
 
+            if self.vies <= 0:
+                print("Partie terminée !")
+                return
+
         else:
             self.verifier_collisions()
 

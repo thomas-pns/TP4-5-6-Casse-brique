@@ -86,7 +86,8 @@ class Brique:
 
     def couleur_actuelle(self):
         """
-        But : donner la couleur d'affichage (redéfinie si elle dépend de la vie).
+        But : donner la couleur d'affichage (redéfinie si elle dépend de
+        la vie).
         Entrée : aucune.
         Sortie : (str) couleur Tkinter.
         """
@@ -109,11 +110,9 @@ class Brique:
         x_min, y_min, x_max, y_max = self.obtenir_boite()
         self.id_canvas = canvas.create_rectangle(
             x_min, y_min, x_max, y_max,
-            fill=self.couleur_actuelle(), stipple="gray25", outline=self.couleur_actuelle(),
-            width=EPAISSEUR_NEON
+            fill=self.couleur_actuelle(), stipple="gray25",
+            outline=self.couleur_actuelle(), width=EPAISSEUR_NEON
         )
-        
-        
 
     def rafraichir(self, canvas):
         """
@@ -121,7 +120,8 @@ class Brique:
         Entrée : canvas (tk.Canvas) : zone de jeu.
         Sortie : aucune.
         """
-        canvas.itemconfig(self.id_canvas,fill=COULEUR_INTERIEUR ,outline=self.couleur_actuelle())
+        canvas.itemconfig(self.id_canvas, fill=self.couleur_actuelle(),
+                          outline=self.couleur_actuelle())
 
     def effacer(self, canvas):
         """
@@ -146,6 +146,13 @@ class BriqueNormale(Brique):
     """Brique détruite en un coup."""
 
     def __init__(self, x, y, largeur, hauteur):
+        """
+        But : créer une brique normale (1 coup, 10 points).
+        Entrées :
+            x, y (int) : position du coin supérieur gauche.
+            largeur, hauteur (int) : dimensions.
+        Sortie : aucune.
+        """
         super().__init__(x, y, largeur, hauteur,
                          vie=1, points=10, couleur="green")
 
@@ -166,6 +173,7 @@ def fabriquer_brique(ligne, colonne, x, y):
     brique.couleur = COULEURS_NEON[ligne % len(COULEURS_NEON)]
     return brique
 
+
 def creer_grille(canvas, largeur_canvas=LARGEUR_CANVAS):
     """
     But : construire la grille de briques, centrée, et la dessiner.
@@ -175,8 +183,8 @@ def creer_grille(canvas, largeur_canvas=LARGEUR_CANVAS):
     Sortie : (Liste) les briques créées, dans l'ordre de la grille.
     """
     briques = Liste()
-    largeur_grille = (NB_COLONNES * LARGEUR_BRIQUE
-                      + (NB_COLONNES - 1) * ESPACEMENT)
+    largeur_grille = (NB_COLONNES * LARGEUR_BRIQUE +
+                      (NB_COLONNES - 1) * ESPACEMENT)
     decalage = (largeur_canvas - largeur_grille) // 2
     for indice in range(NB_LIGNES * NB_COLONNES):
         ligne, colonne = divmod(indice, NB_COLONNES)

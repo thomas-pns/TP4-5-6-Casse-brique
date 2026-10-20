@@ -1,4 +1,3 @@
-# Header
 # -*- coding: utf-8 -*-
 """
 Objectifs du fichier :
@@ -10,19 +9,42 @@ Par :
 Réalisé le 06/10/2026
 
 ToDo List:
-    Menu pause, écran game over, redimensionnement fenêtre, paramètres.
+    Menu pause, redimensionnement fenêtre, paramètres.
 """
+
 import os
 import tkinter as tk
 from tkinter import messagebox
-from jeu.brique import HAUTEUR_CANVAS, LARGEUR_CANVAS, creer_grille
+
+from jeu.balle import Balle
+from jeu.brique import creer_grille
+from jeu.partie import Partie
+from jeu.raquette import Raquette
+
+
 TAG_GAME_OVER = "game_over"
 TAG_FOND = "fond"
 CHEMIN_FOND = os.path.join(os.path.dirname(__file__), "..", "data",
                            "fond.png")
 
+
 class Application:
+    """
+    Fenêtre principale du jeu.
+    Attributs :
+        fenetre : fenêtre Tk.
+        canvas : zone de jeu.
+        image_fond : image de fond.
+        texte_score, label_vies : textes du score et des vies.
+        boutons_game_over : boutons de l'écran game over.
+    """
+
     def __init__(self):
+        """
+        But : créer la fenêtre, le menu et les widgets.
+        Entrée : aucune.
+        Sortie : aucune.
+        """
         self.fenetre = tk.Tk()
         self.fenetre.title("Casse Brique")
         self.fenetre.geometry("800x600")
@@ -30,22 +52,24 @@ class Application:
         self.create_menu()
         self.creer_widgets()
 
-
-
     def creer_widgets(self):
-        self.canvas = tk.Canvas(self.fenetre, bg="black", highlightthickness=0)
+        """
+        But : créer le canvas, le fond, le score, les vies et les boutons.
+        Entrée : aucune.
+        Sortie : aucune.
+        """
+        self.canvas = tk.Canvas(self.fenetre, bg="black",
+                                highlightthickness=0)
         self.canvas.pack(fill="both", expand=True)
         self.fenetre.configure(bg="black")
 
         self.image_fond = tk.PhotoImage(file=CHEMIN_FOND)
         self.creer_fond()
         self.creer_hud()
-        
-        
 
         tk.Button(self.fenetre, text="Démarrer", command=self.test).pack()
-        tk.Button(self.fenetre, text="QUITTER", fg="red", command=self.fenetre.destroy).pack()
-
+        tk.Button(self.fenetre, text="QUITTER", fg="red",
+                  command=self.fenetre.destroy).pack()
 
     def creer_hud(self):
         """
@@ -53,22 +77,37 @@ class Application:
         Entrée : aucune.
         Sortie : aucune.
         """
-        self.texte_score = self.canvas.create_text(700, 20, text="Score : 0", fill="yellow", font=("Helvetica", 14, "bold"))
-        self.label_vies = self.canvas.create_text(100, 20, text="Vies : 3", fill="red", font=("Helvetica", 14, "bold"))
+        self.texte_score = self.canvas.create_text(
+            700, 20, text="Score : 0", fill="yellow",
+            font=("Helvetica", 14, "bold"))
+        self.label_vies = self.canvas.create_text(
+            100, 20, text="Vies : 3", fill="red",
+            font=("Helvetica", 14, "bold"))
 
     def afficher_vies(self, nombre):
+        """
+        But : mettre à jour le nombre de vies affiché.
+        Entrée : nombre (int) : vies restantes.
+        Sortie : aucune.
+        """
         self.canvas.itemconfigure(self.label_vies, text=f"Vies : {nombre}")
 
     def create_menu(self):
+        """
+        But : créer la barre de menu avec le menu Aide.
+        Entrée : aucune.
+        Sortie : aucune.
+        """
         barre = tk.Menu(self.fenetre)
-        menu_aide= tk.Menu(barre, tearoff=0)
-        menu_aide.add_command(label="Règles du jeu", command=self.afficher_regles)
+        menu_aide = tk.Menu(barre, tearoff=0)
+        menu_aide.add_command(label="Règles du jeu",
+                              command=self.afficher_regles)
         barre.add_cascade(label="Aide", menu=menu_aide)
         self.fenetre.config(menu=barre)
 
     def afficher_game_over(self, score):
         """
-        But : superposer l'écran game over au jeu (voile, titre, score
+        But : superposer l'écran game over au jeu (titre, score
         final, boutons Rejouer et Quitter).
         Entrée : score (int) : score final de la partie.
         Sortie : aucune.
@@ -107,7 +146,7 @@ class Application:
 
     def rejouer(self):
         """
-        But : effacer l'écran game over et le niveau terminé, puis lancer
+        But : effacer l'écran game over et le niveau est terminé, puis relancer
         une nouvelle partie.
         Entrée : aucune.
         Sortie : aucune.
@@ -124,23 +163,36 @@ class Application:
         self.creer_hud()
         self.test()
 
-
     def afficher_regles(self):
-        tk.messagebox.showinfo("Règles", "Détruisez toutes les briques !", parent=self.fenetre)
+        """
+        But : afficher les règles du jeu dans une fenêtre d'information.
+        Entrée : aucune.
+        Sortie : aucune.
+        """
+        messagebox.showinfo("Règles", "Détruisez toutes les briques !",
+                            parent=self.fenetre)
 
     def lancer(self):
+        """
+        But : lancer la boucle principale Tkinter.
+        Entrée : aucune.
+        Sortie : aucune.
+        """
         self.fenetre.mainloop()
 
     def test(self):
-        from jeu.balle import Balle
-        from jeu.raquette import Raquette 
-        from jeu.partie import Partie
-
-        balle = Balle(self.canvas, x=400, y=300, rayon=10, vitesse_x=5, vitesse_y=5)
+        """
+        But : créer la balle, la raquette et les briques, puis démarrer
+        une partie.
+        Entrée : aucune.
+        Sortie : aucune.
+        """
+        balle = Balle(self.canvas, x=400, y=300, rayon=10, vitesse_x=5,
+                      vitesse_y=5)
         raquette = Raquette(self.canvas)
         briques = creer_grille(self.canvas, largeur_canvas=800)
 
-        partie = Partie(self,self.canvas, balle, raquette, briques, 0)
+        partie = Partie(self, self.canvas, balle, raquette, briques, 0)
         partie.boucle_jeu()
 
     def afficher_score(self, score):
@@ -161,6 +213,7 @@ class Application:
         self.canvas.create_image(0, 0, image=self.image_fond, anchor="nw",
                                  tags=TAG_FOND)
         self.canvas.tag_lower(TAG_FOND)
+
 
 if __name__ == "__main__":
     app = Application()

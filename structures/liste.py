@@ -1,8 +1,8 @@
-# Header
 # -*- coding: utf-8 -*-
 """
 Objectifs du fichier :
-    Implémenter liste chainée (ajout/suppression/recherche/parcours), itérateur, utiliser pour liste de briques/balles.
+    Implémenter liste chainée (ajout/suppression/recherche/parcours),
+    itérateur, utiliser pour liste de briques/balles.
 
 Par :
     Thomas CHASSANIS PONS et Camil BOUZIRI
@@ -10,8 +10,10 @@ Par :
 Réalisé le 06/10/2026
 
 ToDo List:
-    Liste doublement chainée, tri fusion, suppression doublons, liste circulaire.
+    Liste doublement chainée, tri fusion, suppression doublons, liste
+    circulaire.
 """
+
 
 class Noeud:
     """
@@ -22,6 +24,13 @@ class Noeud:
     """
 
     def __init__(self, valeur, suivant=None):
+        """
+        But : créer un maillon.
+        Entrées :
+            valeur (object) : donnée stockée.
+            suivant (Noeud) : maillon suivant (None par défaut).
+        Sortie : aucune.
+        """
         self.valeur = valeur
         self.suivant = suivant
 
@@ -35,6 +44,11 @@ class Liste:
     """
 
     def __init__(self):
+        """
+        But : créer une liste vide.
+        Entrée : aucune.
+        Sortie : aucune.
+        """
         self.tete = None
         self.queue = None
         self.taille = 0
@@ -124,5 +138,9 @@ class Liste:
             courant = courant.suivant
 
     def __len__(self):
+        """
+        But : donner le nombre d'éléments.
+        Entrée : aucune.
+        Sortie : (int) nombre d'éléments.
+        """
         return self.taille
-

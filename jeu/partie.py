@@ -12,29 +12,33 @@ Réalisé le 06/10/2026
 ToDo List:
     Power-ups, niveaux multiples, système de combo, sauvegarde/reprise partie.
 """
+
 import math
 
 
 ANGLE_NORMALE_MAX = math.radians(30)
 ANGLE_MAX_VERTICALE = math.radians(70)
 
+
 class Partie:
     """
     Gère la boucle de jeu et les collisions.
     Attributs :
-        fenetre : fenêtre Tk (pour programmer la boucle avec after).
+        application : application qui affiche le jeu.
         canvas : zone de jeu.
         balle : balle en jeu.
         raquette : raquette du joueur.
         briques : Liste des briques encore présentes.
         score : points accumulés.
+        vies : vies restantes.
+        est_terminee : True quand la partie est finie.
     """
 
     def __init__(self, application, canvas, balle, raquette, briques, score):
         """
         But : initialiser une partie.
         Entrées :
-            fenetre (tk.Tk) : fenêtre principale.
+            application (Application) : application qui affiche le jeu.
             canvas (tk.Canvas) : zone de jeu.
             balle (Balle) : balle en jeu.
             raquette (Raquette) : raquette du joueur.
@@ -53,76 +57,99 @@ class Partie:
         self.est_terminee = False
         self.application.afficher_score(self.score)
 
-        
     def lecture_coords(self):
+        """
+        But : lire les coordonnées de la balle et de la raquette.
+        Entrée : aucune.
+        Sortie : (tuple) (coords_balle, coords_raquette).
+        """
         coords_balle = self.canvas.coords(self.balle.id)
         coords_raquette = self.canvas.coords(self.raquette.id)
-        # print(coords_raquette, coords_balle)
 
         return coords_balle, coords_raquette
 
-
     def verifier_collisions(self):
+        """
+        But : gérer le contact de la balle avec la raquette puis avec les
+        briques.
+        Entrée : aucune.
+        Sortie : aucune.
+        """
         coords_balle, coords_raquette = self.lecture_coords()
         x1, y1, x2, y2 = coords_balle
         rx1, ry1, rx2, ry2 = coords_raquette
 
         if x1 <= rx2 and x2 >= rx1 and y2 >= ry1 and y1 <= ry2:
             self.rebond_raquette(rx1, rx2)
-            print("Collision détectée !")
 
         self.gerer_collision_briques()
 
     def rebond_raquette(self, rx1, rx2):
+        """
+        But : faire rebondir la balle sur la raquette, avec un angle qui
+        dépend du point d'impact.
+        Entrées :
+            rx1, rx2 (float) : bords gauche et droit de la raquette.
+        Sortie : aucune (modifie la vitesse de la balle).
+        """
         centre = (rx1 + rx2) / 2
         demi_largeur = (rx2 - rx1) / 2
         decalage = (self.balle.x - centre) / demi_largeur
         decalage = max(-1.0, min(1.0, decalage))
-    
-          # Normale locale de la raquette, inclinée selon le point d'impact.
+
+        # Normale locale de la raquette, inclinée selon le point d'impact.
         alpha = decalage * ANGLE_NORMALE_MAX
         normale_x = math.sin(alpha)
         normale_y = -math.cos(alpha)
-    
+
         # Réflexion de Descartes : v' = v - 2 (v.n) n, si la balle arrive
         # bien vers la raquette (v.n < 0).
-        produit = (self.balle.vitesse_x * normale_x
-                   + self.balle.vitesse_y * normale_y)
+        produit = (self.balle.vitesse_x * normale_x +
+                   self.balle.vitesse_y * normale_y)
         if produit < 0:
             self.balle.vitesse_x -= 2 * produit * normale_x
             self.balle.vitesse_y -= 2 * produit * normale_y
-    
-            # Garde-fou : la balle repart vers le haut, à au plus 70° de la
-            # verticale, avec la même norme de vitesse.
+
+        # Garde-fou : la balle repart vers le haut, à au plus 70° de la
+        # verticale, avec la même norme de vitesse.
         norme = math.hypot(self.balle.vitesse_x, self.balle.vitesse_y)
         angle = math.atan2(self.balle.vitesse_x, -self.balle.vitesse_y)
         angle = max(-ANGLE_MAX_VERTICALE, min(ANGLE_MAX_VERTICALE, angle))
         self.balle.vitesse_x = norme * math.sin(angle)
         self.balle.vitesse_y = -norme * math.cos(angle)
-    
+
     def perdre_une_vie(self):
-        print("Vie perdue !")
-        print(f"Vies restantes : {self.vies}")
+        """
+        But : retirer une vie et remettre la balle au centre.
+        Entrée : aucune.
+        Sortie : aucune.
+        """
         self.vies -= 1
-        print(f"Vies restantes après perte : {self.vies}")
         self.application.afficher_vies(self.vies)
 
         self.balle.x = 400
         self.balle.y = 300
         self.balle.vitesse_x = 5
         self.balle.vitesse_y = 5
-        self.canvas.coords(self.balle.id, self.balle.x - self.balle.rayon, self.balle.y - self.balle.rayon, self.balle.x + self.balle.rayon, self.balle.y + self.balle.rayon)
+        self.canvas.coords(self.balle.id,
+                           self.balle.x - self.balle.rayon,
+                           self.balle.y - self.balle.rayon,
+                           self.balle.x + self.balle.rayon,
+                           self.balle.y + self.balle.rayon)
 
     def boucle_jeu(self):
+        """
+        But : faire avancer le jeu d'un pas, puis se relancer toutes les
+        20 ms tant que la partie n'est pas finie.
+        Entrée : aucune.
+        Sortie : aucune.
+        """
         if self.est_terminee:
             return
 
-       
-        # print("Boucle de jeu en cours...")
         self.balle.deplacer()
 
         if self.balle.est_tombee():
-            # print("La balle est tombée ! Vie perdue.")
             self.perdre_une_vie()
 
             if self.vies <= 0:
@@ -179,7 +206,8 @@ class Partie:
         ecart_x = abs(self.balle.x - x_proche)
         ecart_y = abs(self.balle.y - y_proche)
         if ecart_x == 0 and ecart_y == 0:
-            # Centre à l'intérieur : on choisit l'axe de plus faible pénétration.
+            # Centre à l'intérieur : on choisit l'axe de plus faible
+            # pénétration.
             penetration_x = min(self.balle.x - x_min, x_max - self.balle.x)
             penetration_y = min(self.balle.y - y_min, y_max - self.balle.y)
             face_laterale = penetration_x < penetration_y
@@ -201,8 +229,8 @@ class Partie:
 
     def gerer_collision_briques(self):
         """
-        But : traiter la première brique touchée : rebond, perte de vie,
-        suppression et points si elle est détruite.
+        But : traiter la première brique touchée : rebond, coup porté à la
+        brique, suppression et points si elle est détruite.
         Entrée : aucune.
         Sortie : (bool) True si une brique a été touchée.
         """

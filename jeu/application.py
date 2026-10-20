@@ -41,6 +41,10 @@ class Application:
         tk.Button(self.fenetre, text="Démarrer", command=self.test).pack()
         tk.Button(self.fenetre, text="QUITTER", fg="red", command=self.fenetre.destroy).pack()
 
+
+    def afficher_vies(self, nombre):
+        self.canvas.itemconfigure(self.label_vies, text=f"Vies : {nombre}")
+
     def create_menu(self):
         barre = tk.Menu(self.fenetre)
         menu_aide= tk.Menu(barre, tearoff=0)
@@ -63,7 +67,7 @@ class Application:
         raquette = Raquette(self.canvas)
         briques = creer_grille(self.canvas, largeur_canvas=800)
 
-        partie = Partie(self.fenetre,self.canvas, balle, raquette, briques, 0)
+        partie = Partie(self,self.canvas, balle, raquette, briques, 0)
         partie.boucle_jeu()
         
 

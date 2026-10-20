@@ -12,11 +12,11 @@ Réalisé le 06/10/2026
 
 ToDo List:
     BriqueSolide (2 coups), BriqueIndestructible, BriqueBonus,
-    brique explosive, animation destruction, drop power-up.
+    brique explosive, drop power-up.
 """
 
 import tkinter as tk
-
+import random
 from structures.liste import Liste
 
 
@@ -32,6 +32,13 @@ COULEUR_INTERIEUR = "#12002b"
 EPAISSEUR_NEON = 2
 COULEURS_NEON = ["#ffb000", "#ff2bd6", "#c03cff", "#4d6bff", "#00e5ff"]
 
+NB_ECLATS = 12
+TAILLE_ECLAT = 8
+NB_IMAGES = 15
+PERIODE_ECLATS_MS = 30
+GRAVITE = 0.5
+RETRECISSEMENT = 0.95
+MOTIFS_FONDU = ["", "", "gray75", "gray50", "gray25"]
 
 class Brique:
     """
@@ -155,6 +162,67 @@ class BriqueNormale(Brique):
         """
         super().__init__(x, y, largeur, hauteur,
                          vie=1, points=10, couleur="green")
+
+class Explosion:
+    """
+    Animation de destruction d'une brique : des éclats de sa couleur
+    partent dans tous les sens, retombent et s'estompent.
+    Attributs :
+        canvas : zone de jeu.
+        eclats : liste de [identifiant, vitesse_x, vitesse_y].
+        image : numéro de l'image en cours.
+    """
+
+    def __init__(self, canvas, brique):
+        """
+        But : créer les éclats sur la brique et lancer l'animation.
+        Entrées :
+            canvas (tk.Canvas) : zone de jeu.
+            brique (Brique) : brique qui vient d'être détruite.
+        Sortie : aucune.
+        """
+        self.canvas = canvas
+        self.eclats = []
+        self.image = 0
+        x_min, y_min, x_max, y_max = brique.obtenir_boite()
+        couleur = brique.couleur_actuelle()
+        for _ in range(NB_ECLATS):
+            x = random.uniform(x_min, x_max - TAILLE_ECLAT)
+            y = random.uniform(y_min, y_max - TAILLE_ECLAT)
+            id_eclat = canvas.create_rectangle(x, y, x + TAILLE_ECLAT,
+                                               y + TAILLE_ECLAT,
+                                               fill=couleur, outline="")
+            vitesse_x = random.uniform(-5, 5)
+            vitesse_y = random.uniform(-6, 0)
+            self.eclats.append([id_eclat, vitesse_x, vitesse_y])
+        self.animer()
+
+    def animer(self):
+        """
+        But : faire avancer les éclats d'une image, puis se relancer
+        jusqu'à la fin de l'animation, où les éclats sont supprimés.
+        Entrée : aucune.
+        Sortie : aucune.
+        """
+        if self.image >= NB_IMAGES:
+            for eclat in self.eclats:
+                self.canvas.delete(eclat[0])
+            return
+
+        motif = MOTIFS_FONDU[self.image * len(MOTIFS_FONDU) // NB_IMAGES]
+        for eclat in self.eclats:
+            id_eclat, vitesse_x, vitesse_y = eclat
+            self.canvas.move(id_eclat, vitesse_x, vitesse_y)
+            coords = self.canvas.coords(id_eclat)
+            if coords:
+                centre_x = (coords[0] + coords[2]) / 2
+                centre_y = (coords[1] + coords[3]) / 2
+                self.canvas.scale(id_eclat, centre_x, centre_y,
+                                  RETRECISSEMENT, RETRECISSEMENT)
+            self.canvas.itemconfigure(id_eclat, stipple=motif)
+            eclat[2] = vitesse_y + GRAVITE
+        self.image += 1
+        self.canvas.after(PERIODE_ECLATS_MS, self.animer)
 
 
 def fabriquer_brique(ligne, colonne, x, y):

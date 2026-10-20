@@ -15,6 +15,7 @@ ToDo List:
 
 import math
 
+from jeu.brique import Explosion
 
 ANGLE_NORMALE_MAX = math.radians(30)
 ANGLE_MAX_VERTICALE = math.radians(70)
@@ -240,6 +241,7 @@ class Partie:
             if self.touche(brique):
                 self.rebondir(brique)
                 if brique.frapper():
+                    Explosion(self.canvas, brique)
                     brique.effacer(self.canvas)
                     self.briques.supprimer(brique)
                     self.score += brique.points

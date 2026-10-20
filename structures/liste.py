@@ -12,7 +12,6 @@ Réalisé le 06/10/2026
 ToDo List:
     Liste doublement chainée, tri fusion, suppression doublons, liste circulaire.
 """
-from structures.liste import Liste
 
 class Noeud:
     """

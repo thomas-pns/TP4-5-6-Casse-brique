@@ -22,7 +22,7 @@ class Raquette():
         self.vitesse = vitesse
         self.x = (self.canvas.winfo_width() - self.largeur) / 2
         self.y = self.canvas.winfo_height() - self.hauteur - 10
-        self.id = self.canvas.create_rectangle(self.x, self.y, self.x + self.largeur, self.y + self.hauteur, fill="blue")
+        self.id = self.canvas.create_rectangle(self.x, self.y, self.x + self.largeur, self.y + self.hauteur, fill="#2de2e6", outline="#ff6ad5", width=2)
         self.canvas.bind("<Left>", self.deplacer_gauche)
         self.canvas.bind("<Right>", self.deplacer_droite)
         self.canvas.bind("<Motion>", self.suivre_souris)

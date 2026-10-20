@@ -28,6 +28,9 @@ LARGEUR_BRIQUE = 50
 HAUTEUR_BRIQUE = 20
 ESPACEMENT = 5
 MARGE_HAUT = 40
+COULEUR_INTERIEUR = "#12002b"
+EPAISSEUR_NEON = 2
+COULEURS_NEON = ["#ffb000", "#ff2bd6", "#c03cff", "#4d6bff", "#00e5ff"]
 
 
 class Brique:
@@ -106,8 +109,11 @@ class Brique:
         x_min, y_min, x_max, y_max = self.obtenir_boite()
         self.id_canvas = canvas.create_rectangle(
             x_min, y_min, x_max, y_max,
-            fill=self.couleur_actuelle(), outline="black"
+            fill=self.couleur_actuelle(), stipple="gray25", outline=self.couleur_actuelle(),
+            width=EPAISSEUR_NEON
         )
+        
+        
 
     def rafraichir(self, canvas):
         """
@@ -115,7 +121,7 @@ class Brique:
         Entrée : canvas (tk.Canvas) : zone de jeu.
         Sortie : aucune.
         """
-        canvas.itemconfig(self.id_canvas, fill=self.couleur_actuelle())
+        canvas.itemconfig(self.id_canvas,fill=COULEUR_INTERIEUR ,outline=self.couleur_actuelle())
 
     def effacer(self, canvas):
         """
@@ -148,13 +154,17 @@ def fabriquer_brique(ligne, colonne, x, y):
     """
     But : créer la brique d'une case de la grille.
     Entrées :
-        ligne, colonne (int) : indices dans la grille (inutilisés pour
-        l'instant, prévus pour varier les types de briques).
+        ligne (int) : indice de ligne, qui fixe la couleur néon.
+        colonne (int) : indice de colonne (inutilisé pour l'instant,
+        prévu pour varier les types de briques).
         x, y (int) : position du coin supérieur gauche (pixels).
     Sortie : (Brique) la brique créée.
     """
-    return BriqueNormale(x, y, LARGEUR_BRIQUE, HAUTEUR_BRIQUE)
-
+    brique = BriqueNormale(x, y, LARGEUR_BRIQUE, HAUTEUR_BRIQUE)
+    # Couleur néon selon la ligne, en dégradé comme le ciel du fond.
+    # Le modulo évite une IndexError si NB_LIGNES dépasse 5.
+    brique.couleur = COULEURS_NEON[ligne % len(COULEURS_NEON)]
+    return brique
 
 def creer_grille(canvas, largeur_canvas=LARGEUR_CANVAS):
     """

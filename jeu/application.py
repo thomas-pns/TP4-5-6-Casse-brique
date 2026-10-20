@@ -12,11 +12,14 @@ Réalisé le 06/10/2026
 ToDo List:
     Menu pause, écran game over, redimensionnement fenêtre, paramètres.
 """
+import os
 import tkinter as tk
 from tkinter import messagebox
 from jeu.brique import HAUTEUR_CANVAS, LARGEUR_CANVAS, creer_grille
 TAG_GAME_OVER = "game_over"
-
+TAG_FOND = "fond"
+CHEMIN_FOND = os.path.join(os.path.dirname(__file__), "..", "data",
+                           "fond.png")
 
 class Application:
     def __init__(self):
@@ -34,14 +37,24 @@ class Application:
         self.canvas.pack(fill="both", expand=True)
         self.fenetre.configure(bg="black")
 
-        self.texte_score = self.canvas.create_text(700, 20, text="Score : 0", fill="yellow", font=("Helvetica", 14, "bold"))
-        self.label_vies = self.canvas.create_text(100, 20, text="Vies : 3", fill="red", font=("Helvetica", 14, "bold"))
+        self.image_fond = tk.PhotoImage(file=CHEMIN_FOND)
+        self.creer_fond()
+        self.creer_hud()
         
         
 
         tk.Button(self.fenetre, text="Démarrer", command=self.test).pack()
         tk.Button(self.fenetre, text="QUITTER", fg="red", command=self.fenetre.destroy).pack()
 
+
+    def creer_hud(self):
+        """
+        But : dessiner les textes du score et des vies en haut du canvas.
+        Entrée : aucune.
+        Sortie : aucune.
+        """
+        self.texte_score = self.canvas.create_text(700, 20, text="Score : 0", fill="yellow", font=("Helvetica", 14, "bold"))
+        self.label_vies = self.canvas.create_text(100, 20, text="Vies : 3", fill="red", font=("Helvetica", 14, "bold"))
 
     def afficher_vies(self, nombre):
         self.canvas.itemconfigure(self.label_vies, text=f"Vies : {nombre}")
@@ -107,6 +120,7 @@ class Application:
         self.boutons_game_over = []
 
         self.canvas.delete("all")
+        self.creer_fond()
         self.creer_hud()
         self.test()
 
@@ -136,6 +150,17 @@ class Application:
         Sortie : aucune.
         """
         self.canvas.itemconfigure(self.texte_score, text=f"Score : {score}")
+
+    def creer_fond(self):
+        """
+        But : dessiner l'image de fond et la placer sous tous les autres
+        éléments du canvas.
+        Entrée : aucune.
+        Sortie : aucune.
+        """
+        self.canvas.create_image(0, 0, image=self.image_fond, anchor="nw",
+                                 tags=TAG_FOND)
+        self.canvas.tag_lower(TAG_FOND)
 
 if __name__ == "__main__":
     app = Application()
